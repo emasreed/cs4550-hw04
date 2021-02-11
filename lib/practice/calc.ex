@@ -16,8 +16,6 @@ defmodule Practice.Calc do
 
   def pemdasCompare(op1, op2) do
       if op1 == "/" do
-        IO.puts "#{op1} IS DIVIDE"
-        IO.puts "OP2 IS #{op2}"
         case op2 do
           "*" -> 1
           "/" -> 0
@@ -25,8 +23,6 @@ defmodule Practice.Calc do
         end
       else
         if op1 == "+" do
-          IO.puts "#{op1} IS ADD"
-          IO.puts "OP2 IS #{op2}"
           case op2 do
             "*" -> 1
             "/" -> 1
@@ -35,15 +31,11 @@ defmodule Practice.Calc do
           end
         else
           if op1 == "-" do
-            IO.puts "#{op1} IS SUBTRACT"
-            IO.puts "OP2 IS #{op2}"
             case op2 do
               "-" -> 0
               _ -> 1
             end
           else
-            IO.puts "#{op1} IS MULTIPLY"
-            IO.puts "OP2 IS #{op2}"
             case op2 do
               "*" -> 0
               _ -> -1
@@ -59,10 +51,6 @@ defmodule Practice.Calc do
 
   def convertToPostfixAcc(original, postfix, operator_queue) do
     if original == [] do
-      IO.puts "OPERATOR QUEUE"
-      IO.puts operator_queue
-      IO.puts "POSTFIX"
-      IO.puts postfix
       postfix ++ operator_queue
     else
       {type, val} = hd(original)
@@ -79,16 +67,10 @@ defmodule Practice.Calc do
     if operator_queue == [] do
       [postfix, [value]]
     else
-      IO.puts value
-      IO.puts hd(operator_queue)
       if pemdasCompare(value, hd(operator_queue)) < 1 do
-        IO.puts "#{value} less than or equal to #{hd(operator_queue)}"
         [postfix, [value] ++ operator_queue]
       else
-        IO.puts "#{value} greater than #{hd(operator_queue)}"
         [greater, lesser] = getAllGreater(hd(operator_queue), operator_queue, [])
-        IO.puts "GREATER"
-        IO.puts greater
         addToPostfix(value, lesser, postfix ++ greater)
       end
     end
@@ -106,6 +88,38 @@ defmodule Practice.Calc do
     end
   end
 
+  def isOperator(val) do
+    case val do
+      "+" -> true
+      "-" -> true
+      "/" -> true
+      "*" -> true
+      _ -> false
+    end
+  end
+
+  def calculate(op, val1, val2) do
+    case op do
+      "+" -> Float.to_string(parse_float(val2) + parse_float(val1))
+      "-" -> Float.to_string(parse_float(val2) - parse_float(val1))
+      "*" -> Float.to_string(parse_float(val2) * parse_float(val1))
+      "/" -> Float.to_string(parse_float(val2) / parse_float(val1))
+    end
+  end
+
+  def calculatePostfix(postfix, num_stack) do
+    if postfix == [] do
+      hd(num_stack)
+    else
+      if isOperator(hd(postfix)) do
+        calculatePostfix(tl(postfix), [calculate(hd(postfix), hd(num_stack), hd(tl(num_stack)))] ++ tl(tl(num_stack)))
+      else
+        calculatePostfix(tl(postfix), [hd(postfix)] ++ num_stack)
+      end
+    end
+  end
+
+
   def calc(expr) do
     # This should handle +,-,*,/ with order of operations,
     # but doesn't need to handle parens.
@@ -113,6 +127,8 @@ defmodule Practice.Calc do
     |> String.split(" ")
     |> Enum.map(&tagOperator/1)
     |> convertToPostfix
+    |> calculatePostfix([])
+    |> parse_float
 
     # Hint:
     # expr
