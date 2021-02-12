@@ -8,7 +8,7 @@ Emma Reed
 hw04.ereed.xyz
 
 3. What's the URL of your git for this assignment?
-https://github.com/emasreed/cs4550-hw04/blob/master/hw04.service
+https://github.com/emasreed/cs4550-hw04
 
 4. How much of the functionality did you complete?
 I think everything.
